@@ -1,0 +1,41 @@
+[project]
+name = "pytest-results-db"
+description = "pytest plugin for generating database reports"
+readme = "README.rst"
+requires-python = ">=3.8"
+keywords = [
+  "pytest",
+  "html",
+  "report",
+]
+authors = [
+  { name = "Nikola Radosavljevic", email =  "belidzoni@gmail.com" }
+]
+classifiers = [
+  "Framework :: Pytest",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Operating System :: POSIX",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS :: MacOS X",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Testing",
+  "Topic :: Utilities",
+]
+dependencies = [
+    "pytest>=7.0.0",
+    "numpy",
+    "sqlalchemy"
+]
+dynamic = [
+  "version",
+]
+
+[project.entry-points.pytest11]
+pytest_results_db = "pytest_results_db.plugin"
