@@ -8,9 +8,7 @@ from _pytest.pytester import RunResult
 pytest_plugins = ("pytester",)
 
 
-def run(
-    pytester, db_path="db.db", cmd_flags=None
-) -> tuple[pd.DataFrame, pd.DataFrame, RunResult]:
+def run(pytester, db_path="db.db", cmd_flags=None) -> tuple[pd.DataFrame, pd.DataFrame, RunResult]:
     cmd_flags = cmd_flags or []
     db_path = pytester.path.joinpath(db_path)
     results = pytester.runpytest("--db_path", db_path, *cmd_flags)
@@ -118,9 +116,7 @@ def test_xdist(pytester):
     )
     db_cases, db_execution, result = run(pytester, cmd_flags=["-n", "4"])
     result.assert_outcomes(passed=n)
-    assert [
-        worker for worker in result.outlines if "worker" in worker
-    ]  # check if xdist is working
+    assert [worker for worker in result.outlines if "worker" in worker]  # check if xdist is working
     assert 100 == db_execution.shape[0]
     assert 1 == db_cases.shape[0]
 

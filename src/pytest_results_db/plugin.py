@@ -50,9 +50,7 @@ class ExtrasAttachment:
 
     @property
     def test_case_name(self) -> str:
-        test_name = (
-            os.environ.get("PYTEST_CURRENT_TEST", "").split("::")[-1].split("[")[0]
-        )
+        test_name = os.environ.get("PYTEST_CURRENT_TEST", "").split("::")[-1].split("[")[0]
         if "(setup)" in test_name or "(call)" in test_name:
             return test_name.split()[0]
         return test_name
@@ -62,9 +60,7 @@ class ExtrasAttachment:
             test_case_name = self.test_case_name
             if test_case_name not in self.results:
                 self.results[test_case_name] = np.array([])
-            self.results[test_case_name] = np.append(
-                self.results[test_case_name], value
-            )
+            self.results[test_case_name] = np.append(self.results[test_case_name], value)
         super().__setattr__(key, value)
 
 
@@ -76,9 +72,7 @@ class TestResultsDB:
         self.session = None
 
     def pytest_sessionstart(self):
-        self.engine = create_engine(
-            "sqlite:///{}".format(self.config.getoption("db_path"))
-        )
+        self.engine = create_engine("sqlite:///{}".format(self.config.getoption("db_path")))
         if self.config.getoption("db_stack"):
             Base.metadata.drop_all(bind=self.engine)
         Base.metadata.create_all(bind=self.engine)
