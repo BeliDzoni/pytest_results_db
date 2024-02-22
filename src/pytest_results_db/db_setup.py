@@ -3,6 +3,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import Float
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
+from sqlalchemy import PrimaryKeyConstraint
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
@@ -16,10 +17,12 @@ class Base(DeclarativeBase):
 class TestCase(Base):
     __tablename__ = "test_cases"
 
-    name = Column(String, nullable=False, primary_key=True, unique=True)
+    name = Column(String, nullable=False)
     markers = Column(String)
     description = Column(String)
-    cls_name = Column(String)
+    cls_name = Column(String, nullable=False)
+
+    __table_args__ = (PrimaryKeyConstraint("name", "cls_name"),)
 
 
 class ExecutionTable(Base):

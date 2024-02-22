@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import logging
 import os
-import re
 
 import numpy as np
 import pytest
 from _pytest.stash import StashKey
 from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 from .db_setup import Base
@@ -14,6 +15,8 @@ from .db_setup import ExecutionTable
 from .db_setup import TestCase
 
 stash_results = StashKey["ExtraAttachment"]()
+
+LOGGER = logging.getLogger(__name__)
 
 
 def pytest_addoption(parser):
@@ -47,9 +50,12 @@ class ExtrasAttachment:
 
     @property
     def test_case_name(self) -> str:
-        test_name_full = os.environ.get("PYTEST_CURRENT_TEST", "")
-        current_test = re.search(r"tc_\d{3}_\d{3}", test_name_full)
-        return current_test.group()
+        test_name = (
+            os.environ.get("PYTEST_CURRENT_TEST", "").split("::")[-1].split("[")[0]
+        )
+        if "(setup)" in test_name or "(call)" in test_name:
+            return test_name.split()[0]
+        return test_name
 
     def __setattr__(self, key, value):
         if key == "result":
@@ -107,6 +113,16 @@ class TestResultsDB:
                 description=docstring,
             )
             self.session.merge(test_result)
+            try:
+                self.session.commit()
+            except IntegrityError as e:
+                # Handle the error gracefully
+                LOGGER.critical(f"Error: {e}")
+                # Rollback the transaction if necessary
+                self.session.rollback()
+            except Exception as e:
+                LOGGER.critical(e)
+                self.session.rollback()
             executed_results = ExecutionTable(
                 test_name=test_name,
                 params=str(params),
@@ -120,8 +136,17 @@ class TestResultsDB:
                 extras=str(record_test_result.extras),
             )
 
-            self.session.add(executed_results)
-            self.session.commit()
+            self.session.merge(executed_results)
+            try:
+                self.session.commit()
+            except IntegrityError as e:
+                # Handle the error gracefully
+                LOGGER.critical(f"Error: {e}")
+                # Rollback the transaction if necessary
+                self.session.rollback()
+            except Exception as e:
+                LOGGER.critical(e)
+                self.session.rollback()
 
     def pytest_sessionfinish(self):
         self.session.close()
@@ -136,11 +161,11 @@ class TestResultsDB:
         if record_test_result.docstring:
             return record_test_result.docstring
         test_parent = item.parent.obj
-        pref = test_parent.__doc__.strio() if test_parent.__doc__ else None
+        pref = test_parent.__doc__.strip() if test_parent.__doc__ else None
         if pref:
             return pref
         test = item.obj
-        suf = test.__doc__.strio() if test.__doc__ else None
+        suf = test.__doc__.strip() if test.__doc__ else None
         if suf:
             return suf
         return ""
