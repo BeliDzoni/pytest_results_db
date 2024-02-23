@@ -147,6 +147,5 @@ def test_expected(pytester):
             """
     )
     db_cases, db_execution, result = run(pytester)
-    assert db_execution.result.to_list() == ['1']
-    assert db_execution.expected.to_list() == ['1']
-
+    assert db_execution.result.to_list() == ["1"]
+    assert db_execution.expected.to_list() == ["1"]
