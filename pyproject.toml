@@ -1,3 +1,9 @@
+[build-system]
+requires = [
+    "setuptools>=60",
+    "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "pytest-results-db"
 description = "pytest plugin for generating database reports"
@@ -5,7 +11,7 @@ readme = "README.rst"
 requires-python = ">=3.8"
 keywords = [
   "pytest",
-  "html",
+  "db",
   "report",
 ]
 authors = [
@@ -33,9 +39,23 @@ dependencies = [
     "numpy",
     "sqlalchemy"
 ]
-dynamic = [
-  "version",
-]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/BeliDzoni/pytest_results_db"
+Source = "https://github.com/BeliDzoni/pytest_results_db"
 
 [project.entry-points.pytest11]
 pytest_results_db = "pytest_results_db.plugin"
+
+[tool.setuptools_scm]
+version_file = "src/pytest_results_db/_version.py"
+
+#[tool.setuptools]
+#zip-safe = false
+#platforms = [
+#    "linux",
+#    "osx",
+#    "win32",
+#]
+#include-package-data = false
