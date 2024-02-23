@@ -112,12 +112,15 @@ def test_xdist(pytester):
         @pytest.mark.parametrize("a", list(range({n})))
         def test_1(a):
             pass
+        @pytest.mark.parametrize("a", list(range({n})))
+        def test_2(a):
+            pass
         """
     )
     db_cases, db_execution, result = run(pytester, cmd_flags=["-n", "4"])
     result.assert_outcomes(passed=n)
     assert [worker for worker in result.outlines if "worker" in worker]  # check if xdist is working
-    assert 100 == db_execution.shape[0]
+    assert n == db_execution.shape[0]
     assert 1 == db_cases.shape[0]
 
 
@@ -128,8 +131,25 @@ def test_stack_results(pytester):
                 pass
             """
     )
+    # First execution
     run(pytester, cmd_flags=["--db_stack_results"])
+    # 2nd execution
     db_cases, db_execution, result = run(pytester, cmd_flags=["--db_stack_results"])
     result.assert_outcomes(passed=1)
     assert 2 == db_execution.shape[0]
     assert 1 == db_cases.shape[0]
+
+
+def test_expected(pytester):
+    pytester.makepyfile(
+        """
+            def test_1(record_test_result):
+                record_test_result.expected = 1
+                record_test_result.result = 1
+                assert record_test_result.expected == record_test_result.result
+            """
+    )
+    db_cases, db_execution, result = run(pytester)
+    assert db_execution.result.to_list() == [1]
+    assert db_execution.expected.to_list() == [1]
+
