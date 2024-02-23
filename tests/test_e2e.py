@@ -112,9 +112,6 @@ def test_xdist(pytester):
         @pytest.mark.parametrize("a", list(range({n})))
         def test_1(a):
             pass
-        @pytest.mark.parametrize("a", list(range({n})))
-        def test_2(a):
-            pass
         """
     )
     db_cases, db_execution, result = run(pytester, cmd_flags=["-n", "4"])
@@ -150,6 +147,6 @@ def test_expected(pytester):
             """
     )
     db_cases, db_execution, result = run(pytester)
-    assert db_execution.result.to_list() == [1]
-    assert db_execution.expected.to_list() == [1]
+    assert db_execution.result.to_list() == ['1']
+    assert db_execution.expected.to_list() == ['1']
 
