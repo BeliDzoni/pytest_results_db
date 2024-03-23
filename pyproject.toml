@@ -50,12 +50,3 @@ pytest_results_db = "pytest_results_db.plugin"
 
 [tool.setuptools_scm]
 version_file = "src/pytest_results_db/_version.py"
-
-#[tool.setuptools]
-#zip-safe = false
-#platforms = [
-#    "linux",
-#    "osx",
-#    "win32",
-#]
-#include-package-data = false

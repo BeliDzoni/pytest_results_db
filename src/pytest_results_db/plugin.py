@@ -86,7 +86,7 @@ class TestResultsDB:
 
         # Check if the test was executed and determine the status
         if report.when == "call":
-            record_test_result = item.funcargs.get("record_test_result")
+            record_test_result = item.funcargs.get("record_test_result", ExtrasAttachment(request=item))
             record_test_result.extras.update(
                 {
                     "caplog": report.caplog,

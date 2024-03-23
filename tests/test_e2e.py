@@ -60,9 +60,10 @@ def test_parametrized(pytester):
             print(a)
         """
     )
-    _, db_execution, results = run(pytester)
+    db_cases, db_execution, results = run(pytester)
     results.assert_outcomes(passed=n)
     assert db_execution.params.to_list() == list(params_list)
+    assert 1 == db_cases.shape[0]
 
 
 def test_docstring(pytester):
